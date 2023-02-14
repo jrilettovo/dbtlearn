@@ -93,17 +93,149 @@ With DBT we have version control, alerting and logging
 SNOWFLAKE SETUP
 ***************
 
-us-east-2.aws/rs15290
-
-
 rs15290.us-east-2.aws
 
+****************
+INPUT DATA MODEL
+****************
+
+- listings
+    - reviews
+    - hosts
+- full_moon_dates
+
+******
+MODELS
+******
+
+Objectives:
+- Understand the data flow of our project
+- Understand the concept of models in dbt
+- Create three basic models:
+    - src_listings
+    - src_reviews: guided exercises
+    - src_hosts: individual lab
+-----------------
+
+Theory:
+- Models are the basic building block of your business logic
+    - Materalised as tables, views etc.
+    - They live in SQL files in the models folder
+    - Models can reference each other and use templates and macros
+
+Models make use of CTEs (Common Table Expressions) to create temporary tables that can be used in the model.
+
+Within the CTE we could do something simple like select all data then later change the name of one of the columns.
+
+-----------------
+
+Making some models:
+
+So within our raw layer we have:
+    - raw_listings
+    - raw_hosts
+    - raw_reviews
+
+We want to build three models in our staging layer:
+    - src_listings (basic checks)
+    - src_hosts (basic checks)
+    - src_reviews (basic checks)
+
+Create SQL file in models folder with a CTE pulling data from a raw table and a select that has some changes (column aliases). Then use dbt run to initialise model in dev schema. 
+
+*********************************************
+MATERIALISATIONS (DIMENSION AND FACT REVIEWS)
+*********************************************
+
+Objectives:
+    - Understand how models can be connected
+    - Understand the four built in materialisations
+    - Understand how materialisations can be configured on the file and project level
+    - Use dbt run with extra parametres
+
+1. View: 
+    - You want a lightweight representation 
+    - You do no reuse the data often
+    - Do not use if you read from the same model several times
+
+2. Table:
+    - You read from this model repeatedly 
+    - Do not use if building single use models or if the models are populated Incrementally
+
+3. Incremental:
+    - Fact tables 
+    - Append to tables
+    - Do not use if you want to update historical records 
+
+4. Ephemeral 
+    - You merely want to alias a column (date)
+    - Do not use if you read from the same model several times
+
+We can define the above by adding this code to the bottom of our dbt_project.yml file:
+
+```
+models:
+  dbtlearn:
+    +materialized: view
+    dim: 
+      +materialized: table 
+```
+
+**********
+CORE LAYER 
+**********
+
+We want to build three models in our core layer:
+    - dim_listings_cleansed (cleansing)
+    - dim_hosts_cleansed (cleansing)
+    - fct_reviews (incremental)
+
+THEN a final dimension table:
+    - dim_listings_with_hosts 
+
+**********
+FACT TABLE
+**********
+
+```
+{{
+  config(
+    materialized = 'incremental',
+    on_schema_change='fail'
+    )
+}}
+```
+
+We can specify a file level configuration with the jinja template. We have to specify what happens when the schema changes because this is a incremental table so we are not trying to repopulate everything.
+
+Then an example of this was a new row or review added into the raw reviews table. When we then hit dbt run again it flowed through to only incrementally update the fct_reviews table.
+
+If we want to explicitly run a full refresh:
+    - dbt run --full-refresh    
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*** PS C:\Users\James.Rilett\Documents\DBT\course> venv\Scripts\activate
 
 
 
