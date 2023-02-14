@@ -1,0 +1,141 @@
+********************
+DATA THEORY: ETL/ELT
+********************
+
+Data Maturity model:
+
+    1. Data collection
+    2. Data wrangling
+    3. Data integration
+
+    (Not relevant for DBT)
+    4. BI and analytics
+    5. Articial intelligence
+
+Data collection:
+Variety, velocity and volume are the three V's of big data. 
+
+Data wrangling:
+Improving data quality dependent on the use case. This may be duplicates, inconsistent values etc.
+Converting data from an operational source format into a datawarehouse format.
+
+Data integration:
+Writing our transform data from the staging area to a target database where the analytics workloads will be performed.
+We can do loading two ways:
+    - Refresh i.e. rewriting the data completely
+    - Update i.e. only changes to source data will be updated in the datawarehouse
+
+-----------------
+
+ETL (Extract, Transform, Load):
+
+In the past because storage was limited ETL was the widespread approach - do the data collection and transform first and then load it into the datawarehouse. Scaling is harder in ETL. 
+
+ELT:
+
+Storage is cheap so we load raw data first. Bigquery is extremely scalable so it makes sense to do the tranformations within them.
+
+-----------------
+
+Data Warehouse:
+
+Database that lets us do high performance analytics. They can't handle unstructured data.
+We interact with them using SQL.
+
+We can either have on-premise data warehouses or cloud. On-premise is better for compliance priorities but more expensive and harder to scale.
+
+-----------------
+
+Data Lake:
+
+A repositry where you can store files of any type so they have no compute integrated. 
+
+-----------------
+
+Data Lakehouse:
+
+Combines the best features of data warehouses and data lakes. It means the data lake is stored in the cloud.
+
+-----------------
+
+SCD Types (Slowly changing dimensions):
+
+    - Type 0: Not updating the DWH table when a dimension changes i.e. a fax number - they are out of fashion so would not need to update.
+
+    - Type 1: Updating the DWH table when a dimension changes i.e. a phone number - we would not want to keep historical data here only the new value.
+
+    - Type 2: Updating the DWH table when a dimension changes and keeping the old value i.e. historical price of an airbnb room. We might want to keep the previous value to do future analytics. All historical data is also recoverable. 
+
+    - Type 3: Keeping limited data history - adding separate columns for original and current values but not keeping anything in between. Keeps number of records lower so less computation than type 2.
+
+-----------------
+
+************
+DBT OVERVIEW
+************
+
+DBT just works within the T of ELT. 
+
+With SQL you write a query once and you are done. 
+
+With DBT we have version control, alerting and logging 
+
+- Modelling changes are easy to follow and revert
+- Explcit depedencies between models
+- Explore depedencies between models
+- Data quality tests
+- Error reporting
+- Incremental load of fact tables
+- Track history of dimension tables
+- Easy to access documentation
+
+***************
+SNOWFLAKE SETUP
+***************
+
+us-east-2.aws/rs15290
+
+
+rs15290.us-east-2.aws
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
