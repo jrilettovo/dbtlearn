@@ -143,9 +143,9 @@ We want to build three models in our staging layer:
 
 Create SQL file in models folder with a CTE pulling data from a raw table and a select that has some changes (column aliases). Then use dbt run to initialise model in dev schema. 
 
-*********************************************
-MATERIALISATIONS (DIMENSION AND FACT REVIEWS)
-*********************************************
+********************************************
+MATERIALISATIONS (DIMENSION AND FACT TABLES)
+********************************************
 
 Objectives:
     - Understand how models can be connected
@@ -213,6 +213,94 @@ Then an example of this was a new row or review added into the raw reviews table
 If we want to explicitly run a full refresh:
     - dbt run --full-refresh    
 
+-----------------
+
+Once you have changed a view to an ephemeral materialisation you can look in the target folder to find it. 
+
+
+*****************
+SOURCES AND SEEDS
+*****************
+
+Objectives:
+    - Understand the difference between seeds and sources 
+    - Understand source-freshness
+    - Integrate sources into our project
+
+Overview:
+    - Seeds are local files that you upload to the data warehouse from dbt
+    - Sources is an abstraction layer on top of your input tables
+    - Source freshness can be checked automatically
+    - Sources come up as special entities
+
+-----------------
+
+A sources yaml file is a list of tables that you want to treat as sources. This goes within the model folder. 
+
+sources:
+  - name: airbnb
+    schema: raw
+    tables:
+      - name: listings
+        identifier: raw_listings
+
+      - name: hosts
+        identifier: raw_hosts
+
+      - name: reviews
+        identifier: raw_reviews
+
+-----------------
+
+Freshness:
+    - You can check the freshness of your sources
+    - You can define a warning and error threshold
+    - You can define a custom SQL query to check the freshness
+
+        loaded_at_field: date
+                freshness:
+                warn_after: {count: 1, period: hour}
+                error_after: {count: 24, period: hour}
+
+*********
+SNAPSHOTS
+*********
+
+Objectives:
+    - Understand how dbt handles type 2 slowly changing dimensions (tables)
+    - Understand snapshot strategies
+    - Learn how to create snapshots on top of our listings and hosts models
+
+Type 2 dimension tables add on two columns to the table:
+    - valid_from
+    - valid_to
+
+These snapshots live in the snapshots folder. There are a few strategies:
+    - Timestamp: A unique key and an updated_at field is defined on the source model. These columns are used for determining changes.
+    - Check: Any change in a set of columns will be picked up as an update.
+
+The basis of a snapshot is a SELECT *
+
+invalidate_hard_deletes=True - This line in jinja will end the life cycle of a record if it is deleted in the raw table.
+
+*****
+TESTS
+*****
+
+Objectives:
+    - Understand how tests can be defined
+    - Configure built-in generic tests
+    - Create your own singular tests
+
+Overview:
+    - There are two types of tests: singular and generic
+    - Singular tests are SQL queries stored in tests which are expected to return an empty result setting
+    - There are four built in generic tests
+        - unique
+        - not_null
+        - accepted_values
+        - relationships
+    - You can also define your own tests or import tests from dbt packages
 
 
 
@@ -235,7 +323,21 @@ If we want to explicitly run a full refresh:
 
 
 
-*** PS C:\Users\James.Rilett\Documents\DBT\course> venv\Scripts\activate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*** venv\Scripts\activate
 
 
 
