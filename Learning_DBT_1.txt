@@ -302,7 +302,11 @@ Overview:
         - relationships
     - You can also define your own tests or import tests from dbt packages
 
+Generic tests are defined within the schema.yml file in the models folder.
 
+-----------------
+
+Singular tests live in the tests folder as test files.
 
 
 
